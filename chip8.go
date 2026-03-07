@@ -159,6 +159,35 @@ func (c *Chip8) execute(opcode uint16) {
 	case 0xD000:
 	case 0xE000:
 	case 0xF000:
+		switch nn {
+		case 0x07:
+			c.v[x] = c.delayTimer
+		case 0x0A:
+
+		case 0x15:
+			c.delayTimer = c.v[x]
+		case 0x18:
+			c.soundTimer = c.v[x]
+		case 0x1E:
+			c.i += uint16(c.v[x])
+		case 0x29:
+
+		case 0x33:
+			value := c.v[x]
+			c.memory[c.i] = value / 100
+			c.memory[c.i+1] = (value / 10) % 10
+			c.memory[c.i+2] = value % 10
+		case 0x55:
+			for idx := uint16(0); idx < 16; idx += 1 {
+				c.memory[c.i+idx] = c.v[idx]
+			}
+		case 0x65:
+			for idx := uint16(0); idx < 16; idx += 1 {
+				c.v[idx] = c.memory[c.i+idx]
+			}
+		default:
+			log.Fatalf("Unknown opcode: 0x%04X\n", opcode)
+		}
 	default:
 		log.Fatalf("Unknown opcode: 0x%04X\n", opcode)
 	}
