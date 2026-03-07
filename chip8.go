@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math/rand"
 	"os"
 )
 
@@ -75,15 +76,86 @@ func (c *Chip8) execute(opcode uint16) {
 		c.sp += 1
 		c.pc = nnn
 	case 0x3000:
+		if c.v[x] == uint8(nn) {
+			c.pc += 2
+		}
 	case 0x4000:
+		if c.v[x] != uint8(nn) {
+			c.pc += 2
+		}
 	case 0x5000:
+		if n == 0 {
+			if c.v[x] == c.v[y] {
+				c.pc += 2
+			}
+		} else {
+			log.Fatalf("Unknown opcode: 0x%04X\n", opcode)
+		}
 	case 0x6000:
+		c.v[x] = uint8(nn)
 	case 0x7000:
+		c.v[x] += uint8(nn)
 	case 0x8000:
+		switch n {
+		case 0x0:
+			c.v[x] = c.v[y]
+		case 0x1:
+			c.v[x] |= c.v[y]
+		case 0x2:
+			c.v[x] &= c.v[y]
+		case 0x3:
+			c.v[x] ^= c.v[y]
+		case 0x4:
+			ans := uint16(c.v[x]) + uint16(c.v[y])
+			c.v[x] = uint8(ans)
+			if ans > 0xFF {
+				c.v[0xF] = 1
+			} else {
+				c.v[0xF] = 0
+			}
+		case 0x5:
+			if c.v[x] >= c.v[y] {
+				c.v[0xF] = 1
+			} else {
+				c.v[0xF] = 0
+			}
+			c.v[x] -= c.v[y]
+		case 0x6:
+			ans := c.v[x] & 0x1
+			if ans == 1 {
+				c.v[0xF] = 1
+			} else {
+				c.v[0xF] = 0
+			}
+			c.v[x] >>= 1
+		case 0x7:
+			if c.v[y] >= c.v[x] {
+				c.v[0xF] = 1
+			} else {
+				c.v[0xF] = 1
+			}
+			c.v[x] = c.v[y] - c.v[x]
+		case 0xE:
+			ans := c.v[x] >> 7
+			if ans == 1 {
+				c.v[0xF] = 1
+			} else {
+				c.v[0xF] = 0
+			}
+			c.v[x] <<= 1
+		default:
+			log.Fatalf("Unknown opcode: 0x%04X\n", opcode)
+		}
 	case 0x9000:
+		if c.v[x] != c.v[y] {
+			c.pc += 2
+		}
 	case 0xA000:
+		c.i = nnn
 	case 0xB000:
+		c.pc = nnn + uint16(c.v[0])
 	case 0xC000:
+		c.v[x] = uint8(rand.Intn(256)) & uint8(nn)
 	case 0xD000:
 	case 0xE000:
 	case 0xF000:
