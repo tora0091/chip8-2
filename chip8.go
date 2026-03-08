@@ -203,10 +203,7 @@ func (c *Chip8) setTimer() {
 }
 
 func (c *Chip8) cycle() {
-	// chip8: 500Hz
-	for i := 0; i < 8; i += 1 {
-		opcode := c.fetch()
-		c.pc += 2
-		c.execute(opcode)
-	}
+	opcode := c.fetch()
+	c.pc += 2
+	c.execute(opcode)
 }
