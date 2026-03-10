@@ -49,7 +49,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			color.White,
 			false,
 		)
-
 	}
 }
 
