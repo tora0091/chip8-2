@@ -157,6 +157,30 @@ func (c *Chip8) execute(opcode uint16) {
 	case 0xC000:
 		c.v[x] = uint8(rand.Intn(256)) & uint8(nn)
 	case 0xD000:
+		xPos := c.v[x] % displayWidth
+		yPos := c.v[y] % displayHeight
+		c.v[0xF] = 0
+
+		for row := 0; row < int(n); row += 1 {
+			if int(yPos)+row >= displayHeight {
+				break
+			}
+			sprite := c.memory[c.i+uint16(row)]
+
+			for col := 0; col < 8; col += 1 {
+				if int(xPos)+col >= displayWidth {
+					break
+				}
+				bit := sprite & (0x80 >> col)
+				if bit != 0 {
+					idx := (int(xPos) + col) + (int(yPos)+row)*displayWidth
+					if c.display[idx] == 1 {
+						c.v[0xF] = 1
+					}
+					c.display[idx] ^= 1
+				}
+			}
+		}
 	case 0xE000:
 	case 0xF000:
 		switch nn {

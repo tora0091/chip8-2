@@ -1,11 +1,12 @@
 package main
 
 import (
+	"image/color"
 	"log"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 const displayWidth = 64
@@ -29,7 +30,27 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Hello, world")
+	screen.Fill(color.Black)
+
+	for idx, val := range g.chip8.display {
+		if val == 0 {
+			continue
+		}
+
+		x := float32(idx%displayWidth) * displayScale
+		y := float32(idx/displayWidth) * displayScale
+
+		vector.FillRect(
+			screen,
+			x,
+			y,
+			displayScale,
+			displayScale,
+			color.White,
+			false,
+		)
+
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
