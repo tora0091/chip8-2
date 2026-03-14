@@ -20,6 +20,15 @@ type Game struct {
 func (g *Game) Update() error {
 	g.updateKeypad()
 
+	if g.chip8.waitingForKey {
+		for i := 0; i < 16; i += 1 {
+			if g.chip8.keypad[i] {
+				g.chip8.v[g.chip8.waitingRegister] = uint8(i)
+				break
+			}
+		}
+	}
+
 	// chip8: 500Hz
 	for i := 0; i < 8; i += 1 {
 		g.chip8.cycle()

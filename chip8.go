@@ -11,16 +11,18 @@ const startFontAddress = 0x050
 const maxMemorySize = 4096
 
 type Chip8 struct {
-	memory     [maxMemorySize]uint8
-	v          [16]uint8
-	i          uint16
-	delayTimer uint8
-	soundTimer uint8
-	pc         uint16
-	sp         uint8
-	stack      [16]uint16
-	display    [displayWidth * displayHeight]uint8
-	keypad     [16]bool
+	memory          [maxMemorySize]uint8
+	v               [16]uint8
+	i               uint16
+	delayTimer      uint8
+	soundTimer      uint8
+	pc              uint16
+	sp              uint8
+	stack           [16]uint16
+	display         [displayWidth * displayHeight]uint8
+	keypad          [16]bool
+	waitingForKey   bool
+	waitingRegister uint16
 }
 
 func NewChip8() *Chip8 {
@@ -200,7 +202,8 @@ func (c *Chip8) execute(opcode uint16) {
 		case 0x07:
 			c.v[x] = c.delayTimer
 		case 0x0A:
-
+			c.waitingForKey = true
+			c.waitingRegister = x
 		case 0x15:
 			c.delayTimer = c.v[x]
 		case 0x18:
