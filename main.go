@@ -18,13 +18,15 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
+	g.updateKeypad()
+
 	// chip8: 500Hz
 	for i := 0; i < 8; i += 1 {
 		g.chip8.cycle()
 	}
 
 	// timer: 60Hz
-	g.chip8.setTimer()
+	g.chip8.updateTimer()
 
 	return nil
 }
@@ -54,6 +56,25 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	return displayWidth * displayScale, displayHeight * displayScale
+}
+
+func (g *Game) updateKeypad() {
+	g.chip8.keypad[0x0] = ebiten.IsKeyPressed(ebiten.KeyX)
+	g.chip8.keypad[0x1] = ebiten.IsKeyPressed(ebiten.Key1)
+	g.chip8.keypad[0x2] = ebiten.IsKeyPressed(ebiten.Key2)
+	g.chip8.keypad[0x3] = ebiten.IsKeyPressed(ebiten.Key3)
+	g.chip8.keypad[0x4] = ebiten.IsKeyPressed(ebiten.KeyQ)
+	g.chip8.keypad[0x5] = ebiten.IsKeyPressed(ebiten.KeyW)
+	g.chip8.keypad[0x6] = ebiten.IsKeyPressed(ebiten.KeyE)
+	g.chip8.keypad[0x7] = ebiten.IsKeyPressed(ebiten.KeyA)
+	g.chip8.keypad[0x8] = ebiten.IsKeyPressed(ebiten.KeyS)
+	g.chip8.keypad[0x9] = ebiten.IsKeyPressed(ebiten.KeyD)
+	g.chip8.keypad[0xA] = ebiten.IsKeyPressed(ebiten.KeyZ)
+	g.chip8.keypad[0xB] = ebiten.IsKeyPressed(ebiten.KeyC)
+	g.chip8.keypad[0xC] = ebiten.IsKeyPressed(ebiten.Key4)
+	g.chip8.keypad[0xD] = ebiten.IsKeyPressed(ebiten.KeyR)
+	g.chip8.keypad[0xE] = ebiten.IsKeyPressed(ebiten.KeyF)
+	g.chip8.keypad[0xF] = ebiten.IsKeyPressed(ebiten.KeyV)
 }
 
 func main() {

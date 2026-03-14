@@ -20,6 +20,7 @@ type Chip8 struct {
 	sp         uint8
 	stack      [16]uint16
 	display    [displayWidth * displayHeight]uint8
+	keypad     [16]bool
 }
 
 func NewChip8() *Chip8 {
@@ -182,6 +183,18 @@ func (c *Chip8) execute(opcode uint16) {
 			}
 		}
 	case 0xE000:
+		switch nn {
+		case 0x9E:
+			if c.keypad[c.v[x]] {
+				c.pc += 2
+			}
+		case 0xA1:
+			if !c.keypad[c.v[x]] {
+				c.pc += 2
+			}
+		default:
+			log.Fatalf("Unknown opcode: 0x%04X\n", opcode)
+		}
 	case 0xF000:
 		switch nn {
 		case 0x07:
@@ -217,7 +230,7 @@ func (c *Chip8) execute(opcode uint16) {
 	}
 }
 
-func (c *Chip8) setTimer() {
+func (c *Chip8) updateTimer() {
 	if c.delayTimer > 0 {
 		c.delayTimer -= 1
 	}
